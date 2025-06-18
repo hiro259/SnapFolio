@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "SnapFolio",
   "version": "1.0",
+  "permissions": ["activeTab"],
   "action": {
     "default_popup": "popup.html"
   }
