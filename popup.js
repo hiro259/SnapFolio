@@ -1,3 +1,6 @@
-document.getElementById('show').addEventListener('click', () => {
-  alert('SnapFolio');
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('show').addEventListener('click', () => {
+    alert('SnapFolio');
+    console.log('SnapFolio');
+  });
 });
