@@ -75,8 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const sample = await loadImage(images[0].dataUrl);
     canvas.width = sample.width;
-    canvas.height = info.scrollHeight * info.devicePixelRatio;
-    const ctx = canvas.getContext('2d');
+    // Extend canvas height to include the final viewport so bottom fixed
+    // elements are captured correctly
+    canvas.height = Math.max(info.scrollHeight, sections * info.innerHeight) * info.devicePixelRatio;
+    const ctx = canvas.getContext("2d");
 
     for (const {y, dataUrl} of images) {
       const img = await loadImage(dataUrl);
