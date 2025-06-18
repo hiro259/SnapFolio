@@ -23,8 +23,30 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < sections; i++) {
       await chrome.scripting.executeScript({
         target: {tabId: tab.id},
-        func: y => window.scrollTo(0, y),
+        func: (y) => window.scrollTo(0, y),
         args: [i * info.innerHeight]
+      });
+
+      await chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        func: (index, total) => {
+          const showHeader = index === 0;
+          const showFooter = index === total - 1;
+          const vh = window.innerHeight;
+          document.querySelectorAll('*').forEach(el => {
+            const style = getComputedStyle(el);
+            if (style.position === 'fixed') {
+              const rect = el.getBoundingClientRect();
+              const isHeader = rect.top < vh / 2;
+              if ((isHeader && showHeader) || (!isHeader && showFooter)) {
+                el.style.visibility = '';
+              } else {
+                el.style.visibility = 'hidden';
+              }
+            }
+          });
+        },
+        args: [i, sections]
       });
 
       await new Promise(r => setTimeout(r, 200));
@@ -32,6 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {format: 'png'});
       images.push({y: i * info.innerHeight, dataUrl});
     }
+    await chrome.scripting.executeScript({
+      target: {tabId: tab.id},
+      func: () => {
+        document.querySelectorAll('*').forEach(el => {
+          if (getComputedStyle(el).position === 'fixed') {
+            el.style.visibility = '';
+          }
+        });
+      }
+    });
     await chrome.scripting.executeScript({
       target: {tabId: tab.id},
       func: y => window.scrollTo(0, y),
