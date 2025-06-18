@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error(chrome.runtime.lastError);
         return;
       }
-      chrome.tabs.create({url: dataUrl});
+      chrome.storage.local.set({screenshot: dataUrl}, () => {
+        chrome.tabs.create({url: chrome.runtime.getURL('screenshot.html')});
+      });
     });
   });
 });
