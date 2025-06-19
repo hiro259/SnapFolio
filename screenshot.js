@@ -7,12 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (src) {
     img.src = src;
   } else {
-    chrome.storage.local.get('lastScreenshot', data => {
-      if (data.lastScreenshot) {
-        img.src = data.lastScreenshot;
-      } else {
-        img.alt = 'Screenshot not available';
-      }
-    });
+    img.alt = 'Screenshot not available';
   }
 });
