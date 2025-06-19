@@ -91,8 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const blob = await (await fetch(finalUrl)).blob();
       const url = URL.createObjectURL(blob);
-      chrome.tabs.create({
-        url: chrome.runtime.getURL('screenshot.html?src=' + encodeURIComponent(url))
+
+      // Store the screenshot in case the query parameter is missing later
+      chrome.storage.local.set({lastScreenshot: finalUrl}, () => {
+        chrome.tabs.create({
+          url: chrome.runtime.getURL('screenshot.html?src=' + encodeURIComponent(url))
+        });
       });
     } catch (e) {
       console.error('Failed to create screenshot URL:', e);
