@@ -89,11 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalUrl = canvas.toDataURL();
 
     try {
-      await chrome.storage.session.set({screenshot: finalUrl});
+      const blob = await (await fetch(finalUrl)).blob();
+      const url = URL.createObjectURL(blob);
+      chrome.tabs.create({
+        url: chrome.runtime.getURL('screenshot.html?src=' + encodeURIComponent(url))
+      });
     } catch (e) {
-      console.error('Failed to store screenshot:', e);
+      console.error('Failed to create screenshot URL:', e);
     }
-    chrome.tabs.create({url: chrome.runtime.getURL('screenshot.html')});
   });
 
   function loadImage(src) {
