@@ -1,9 +1,9 @@
-// Display screenshot stored in chrome.storage
+// Display screenshot passed via query parameter
 
 document.addEventListener('DOMContentLoaded', () => {
-  chrome.storage.session.get('screenshot', (result) => {
-    if (result.screenshot) {
-      document.getElementById('screenshot').src = result.screenshot;
-    }
-  });
+  const params = new URLSearchParams(location.search);
+  const src = params.get('src');
+  if (src) {
+    document.getElementById('screenshot').src = src;
+  }
 });
