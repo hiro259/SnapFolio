@@ -88,7 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const finalUrl = canvas.toDataURL();
 
-    await chrome.storage.local.set({screenshot: finalUrl});
+    try {
+      await chrome.storage.session.set({screenshot: finalUrl});
+    } catch (e) {
+      console.error('Failed to store screenshot:', e);
+    }
     chrome.tabs.create({url: chrome.runtime.getURL('screenshot.html')});
   });
 
