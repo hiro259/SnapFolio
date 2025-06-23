@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       // Wait for scrollbars to fade out before capturing the screenshot
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 1500));
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {format: 'png'});
       images.push({y: i * info.innerHeight, dataUrl});
     }
