@@ -51,10 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Wait for scrollbars to fade out before capturing the screenshot
       await new Promise(r => setTimeout(r, 500));
-
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {format: 'png'});
       images.push({y: i * info.innerHeight, dataUrl});
     }
+
     await chrome.scripting.executeScript({
       target: {tabId: tab.id},
       func: () => {
@@ -76,20 +76,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.createElement('canvas');
     const sample = await loadImage(images[0].dataUrl);
     canvas.width = sample.width;
-    // Extend canvas height to include the final viewport so bottom fixed
-    // elements are captured correctly
-    canvas.height = Math.max(info.scrollHeight, sections * info.innerHeight) * info.devicePixelRatio;
-    const ctx = canvas.getContext("2d");
+    canvas.height = info.scrollHeight * info.devicePixelRatio;
+    const ctx = canvas.getContext('2d');
 
     for (const {y, dataUrl} of images) {
       const img = await loadImage(dataUrl);
       ctx.drawImage(img, 0, y * info.devicePixelRatio);
     }
 
-    const finalUrl = canvas.toDataURL();
-
-    await chrome.storage.local.set({screenshot: finalUrl});
-    chrome.tabs.create({url: chrome.runtime.getURL('screenshot.html')});
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'screenshot.png';
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
   });
 
   function loadImage(src) {
